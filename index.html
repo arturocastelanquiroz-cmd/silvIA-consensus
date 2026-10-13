@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A1B2D">
+<title>SilvIA · Piloto v1 · Consensus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+<style>
+  /* ───────── Design tokens (inspirados en McKinsey: navy profundo + azul eléctrico + serif editorial) ───────── */
+  :root{
+    --navy:#0A1B2D;
+    --navy-2:#102742;
+    --blue:#2352FF;
+    --blue-soft:#7FA0FF;
+    --ink:#0A1B2D;
+    --muted:#5B6B7F;
+    --line:#DDE3EC;
+    --paper:#FFFFFF;
+    --mist:#F3F5F9;
+    --pink:#E7A6C8;
+    --serif:"Newsreader", Georgia, "Times New Roman", serif;
+    --sans:"Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --gutter:20px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    font-family:var(--sans);color:var(--ink);background:var(--paper);
+    font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .wrap{width:100%;max-width:560px;margin:0 auto;padding:0 var(--gutter)}
+  .eyebrow{
+    font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  }
+
+  /* ───────── Header ───────── */
+  .top{
+    background:var(--paper);border-bottom:1px solid var(--line);
+    padding-top:env(safe-area-inset-top);
+  }
+  .top .wrap{display:flex;align-items:center;justify-content:space-between;height:72px}
+  .logo img{height:44px;width:auto;display:block}
+  .logo-fallback{display:none;align-items:center;gap:8px}
+  .logo-fallback .sq{
+    width:30px;height:30px;background:#1E88F0;color:#fff;border-radius:2px;
+    font-family:var(--serif);font-weight:600;font-size:20px;display:grid;place-items:center;
+  }
+  .logo-fallback .tx{line-height:1.05}
+  .logo-fallback .tx b{display:block;font-size:17px;color:#6B6B6B;font-weight:500;letter-spacing:-.01em}
+  .logo-fallback .tx i{font-style:normal;font-size:8px;letter-spacing:.3em;color:#6B6B6B}
+  .pill{
+    font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--blue);border:1px solid var(--blue);padding:6px 10px;
+  }
+
+  /* ───────── Hero ───────── */
+  .hero{
+    position:relative;overflow:hidden;background:var(--navy);color:#fff;
+    padding:44px 0 56px;
+  }
+  .hero::before,.hero::after{content:"";position:absolute;pointer-events:none;border-radius:50%}
+  /* formas “cristal” abstractas, guiño a las imágenes de McKinsey */
+  .hero::before{
+    width:320px;height:320px;right:-120px;top:-60px;
+    background:conic-gradient(from 210deg,#2352FF,#0A2A8C,#5C7DFF,#E7A6C8 70%,#2352FF);
+    filter:blur(38px);opacity:.55;
+  }
+  .hero::after{
+    width:220px;height:220px;left:-110px;bottom:-110px;
+    background:radial-gradient(circle,#2352FF 0%,rgba(35,82,255,0) 70%);opacity:.7;
+  }
+  .hero .wrap{position:relative;z-index:1}
+  .hero .eyebrow{color:var(--blue-soft);margin-bottom:18px}
+  h1{
+    font-family:var(--serif);font-weight:600;font-size:clamp(38px,11vw,52px);
+    line-height:1.04;letter-spacing:-.02em;
+  }
+  h1 em{font-style:italic;font-weight:500;color:#fff}
+  .hero p.lead{
+    margin-top:18px;font-size:17px;line-height:1.55;color:#D3DBE8;max-width:34ch;
+  }
+  .cta-row{margin-top:30px;display:flex;align-items:center;gap:14px}
+  .btn{
+    display:inline-flex;align-items:center;gap:12px;min-height:52px;
+    background:var(--blue);color:#fff;text-decoration:none;font-weight:600;font-size:16px;
+    padding:0 22px;border:0;border-radius:0;cursor:pointer;
+    transition:background .15s;
+  }
+  .btn:active{background:#1A40D6}
+  .btn .arrow{
+    width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.18);
+    display:grid;place-items:center;
+  }
+  .btn svg{width:16px;height:16px}
+  .hint{font-size:13px;color:#9FB0C8;line-height:1.35}
+
+  /* ───────── Secciones ───────── */
+  section{padding:52px 0}
+  h2{
+    font-family:var(--serif);font-weight:600;font-size:30px;line-height:1.1;letter-spacing:-.015em;
+    margin-top:10px;
+  }
+  .sec-lead{margin-top:10px;color:var(--muted);font-size:16px}
+  .eyebrow.b{color:var(--blue)}
+
+  /* Qué puedes pedirle */
+  .asks{margin-top:26px;display:grid;gap:12px}
+  .ask{
+    width:100%;text-align:left;background:var(--paper);border:1px solid var(--line);
+    border-left:3px solid var(--blue);padding:16px 16px 16px 18px;cursor:pointer;
+    font:inherit;color:inherit;position:relative;
+    transition:background .15s,border-color .15s;
+  }
+  .ask:active{background:var(--mist)}
+  .ask .cat{
+    font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);
+  }
+  .ask .say{
+    font-family:var(--serif);font-size:20px;line-height:1.25;margin-top:6px;font-weight:500;
+    padding-right:34px;
+  }
+  .ask .copy{
+    position:absolute;right:14px;top:50%;transform:translateY(-50%);
+    width:20px;height:20px;color:var(--muted);
+  }
+  .ask.done .copy{color:var(--blue)}
+  .tip{
+    margin-top:18px;background:var(--mist);padding:14px 16px;font-size:14px;color:var(--ink);
+    display:flex;gap:10px;align-items:flex-start;
+  }
+  .tip b{font-weight:600}
+  .tip svg{flex:none;width:18px;height:18px;margin-top:2px;color:var(--blue)}
+
+  /* Widget */
+  .talk{
+    position:relative;overflow:hidden;background:var(--navy);color:#fff;padding:52px 0 150px;
+  }
+  .talk::before{
+    content:"";position:absolute;width:300px;height:300px;left:-140px;top:-120px;border-radius:50%;
+    background:radial-gradient(circle,#2352FF 0%,rgba(35,82,255,0) 70%);opacity:.6;
+  }
+  .talk .wrap{position:relative;z-index:1}
+  .talk .eyebrow{color:var(--blue-soft)}
+  .talk h2{color:#fff}
+  .talk .sec-lead{color:#C2CDDD}
+  .stage{
+    margin-top:26px;min-height:300px;border:1px solid rgba(255,255,255,.18);
+    background:rgba(255,255,255,.04);display:grid;place-items:center;padding:24px;text-align:center;
+  }
+  .stage p{font-size:15px;color:#C2CDDD;max-width:28ch}
+  .stage .dot{
+    width:14px;height:14px;border-radius:50%;background:var(--blue);margin:0 auto 14px;
+    box-shadow:0 0 0 0 rgba(35,82,255,.7);animation:pulse 2s infinite;
+  }
+  @keyframes pulse{70%{box-shadow:0 0 0 18px rgba(35,82,255,0)}100%{box-shadow:0 0 0 0 rgba(35,82,255,0)}}
+  @media (prefers-reduced-motion:reduce){.stage .dot{animation:none}}
+  .modes{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+  .modes span{
+    font-size:13px;border:1px solid rgba(255,255,255,.28);padding:7px 12px;color:#E6ECF5;
+  }
+
+  /* Piloto v1 */
+  .v1{background:var(--mist)}
+  .cols{margin-top:24px;display:grid;gap:14px}
+  .card{background:var(--paper);border:1px solid var(--line);padding:20px}
+  .card h3{
+    font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);
+  }
+  .card ul{list-style:none;margin-top:12px;display:grid;gap:10px}
+  .card li{font-size:15px;padding-left:18px;position:relative}
+  .card li::before{content:"";position:absolute;left:0;top:.6em;width:7px;height:2px;background:var(--blue)}
+  .card.soft h3{color:var(--muted)}
+  .card.soft li::before{background:var(--muted)}
+
+  footer{
+    background:var(--navy);color:#9FB0C8;font-size:13px;padding:26px 0 calc(26px + env(safe-area-inset-bottom));
+  }
+  footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+  /* toast */
+  .toast{
+    position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);
+    background:var(--navy);color:#fff;font-size:14px;padding:12px 18px;opacity:0;pointer-events:none;
+    transition:opacity .2s,transform .2s;z-index:50;border-left:3px solid var(--blue);
+  }
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+
+  @media (min-width:700px){
+    .wrap{max-width:720px}
+    .cols{grid-template-columns:1fr 1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- ═════════ Header ═════════ -->
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#" aria-label="Consensus Abogados">
+      <!-- Coloca el archivo del logo junto a este HTML con el nombre logo-consensus.png -->
+      <img src="logo-consensus.png" alt="Consensus Abogados"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <span class="logo-fallback" aria-hidden="true">
+        <span class="sq">Se</span>
+        <span class="tx"><b>consensus</b><i>· ABOGADOS ·</i></span>
+      </span>
+    </a>
+    <span class="pill">Piloto v1</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ═════════ Hero ═════════ -->
+  <div class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Asistente de seguimiento · Piloto v1</p>
+      <h1>Hola,<br>Conoce a <em>SilvIA</em>.</h1>
+      <p class="lead">Tu asistente para dar seguimiento a los asuntos en Consensus. Háblale o escríbele, como a una persona.</p>
+      <div class="cta-row">
+        <a class="btn" href="#silvia">
+          Hablar con SilvIA
+          <span class="arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════ Piloto v1 ═════════ -->
+  <section class="v1">
+    <div class="wrap">
+      <p class="eyebrow b">Sobre este piloto</p>
+      <h2>Es una primera versión.</h2>
+      <p class="sec-lead">Está hecha para que la uses como versión piloto de un asistente más completo posteriormente.</p>
+
+      <div class="cols">
+        <div class="card">
+          <h3>Hoy puede</h3>
+          <ul>
+            <li>Consultar el estado de los asuntos</li>
+            <li>Revisar qué vence y cuándo</li>
+            <li>Anotar avances y actualizar asuntos</li>
+            <li>Enviar recordatorios por correo a tu equipo, siempre contigo en copia</li>
+          </ul>
+        </div>
+        <div class="card soft">
+          <h3>Aún no hace</h3>
+          <ul>
+            <li>Leer tu correo ni tu agenda de Outlook</li>
+            <li>Atender por WhatsApp</li>
+            <li>Dar seguimiento en el IMPI</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════ Qué puedes pedirle ═════════ -->
+  <section id="pedir">
+    <div class="wrap">
+      <p class="eyebrow b">Qué puedes pedirle</p>
+      <h2>Dile lo que necesitas, con tus palabras.</h2>
+      <p class="sec-lead">Toca cualquier ejemplo para copiarlo y úsalo tal cual, o cámbialo a tu gusto.</p>
+
+      <div class="asks">
+        <button class="ask" type="button" data-say="¿Cómo va el asunto de [cliente]?">
+          <span class="cat">Consultar</span>
+          <p class="say">“¿Cómo va el asunto de [cliente]?”</p>
+          <svg class="copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="1"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/></svg>
+        </button>
+
+        <button class="ask" type="button" data-say="¿Qué asuntos vencen esta semana?">
+          <span class="cat">Vencimientos</span>
+          <p class="say">“¿Qué asuntos vencen esta semana?”</p>
+          <svg class="copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="1"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/></svg>
+        </button>
+
+        <button class="ask" type="button" data-say="Anota que hablé con [cliente] y quedó de mandar los documentos el jueves.">
+          <span class="cat">Anotar</span>
+          <p class="say">“Anota que hablé con [cliente] y quedó de mandar los documentos el jueves.”</p>
+          <svg class="copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="1"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/></svg>
+        </button>
+
+        <button class="ask" type="button" data-say="Actualiza el asunto de [cliente]: ya se presentó el escrito.">
+          <span class="cat">Actualizar</span>
+          <p class="say">“Actualiza el asunto de [cliente]: ya se presentó el escrito.”</p>
+          <svg class="copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="1"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/></svg>
+        </button>
+
+        <button class="ask" type="button" data-say="Mándale un recordatorio a [nombre] sobre el asunto de [cliente].">
+          <span class="cat">Recordatorio por correo</span>
+          <p class="say">“Mándale un recordatorio a [nombre] sobre el asunto de [cliente].”</p>
+          <svg class="copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="1"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/></svg>
+        </button>
+      </div>
+
+      <div class="tip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>
+        <p><b>Habla por nombre de cliente o de asunto.</b> No necesitas claves ni números. Antes de enviar un correo, SilvIA te muestra el borrador y espera tu confirmación.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════ Widget ═════════ -->
+  <div class="talk" id="silvia">
+    <div class="wrap">
+      <p class="eyebrow">Tu conversación</p>
+      <h2>Habla con SilvIA</h2>
+      <p class="sec-lead">Toca el botón de SilvIA y elige: por voz o por texto. Si es la primera vez, acepta el permiso del micrófono.</p>
+
+      <div class="stage">
+        <div>
+          <div class="dot" aria-hidden="true"></div>
+          <p>SilvIA está lista. Busca su botón en la esquina inferior de la pantalla.</p>
+        </div>
+      </div>
+
+      <div class="modes" aria-label="Formas de usarla">
+        <span>🎙️ Por voz</span>
+        <span>⌨️ Por texto</span>
+      </div>
+
+      <!--
+        ═══ WIDGET DE ELEVENLABS ═══
+        1) Agent ID ya configurado.
+        2) En el panel del agente, agrega el dominio donde alojes esta página a la lista de "Allowed hosts".
+        3) Personaliza color/textos del widget desde la pestaña Widget del agente
+           (azul sugerido: #2352FF, texto del botón: "Hablar con SilvIA").
+      -->
+      <elevenlabs-convai agent-id="agent_3501m1fqmkazfaqvmjgrc9qznzkw"></elevenlabs-convai>
+      <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>SilvIA · Piloto v1</span>
+    <span>Consensus Abogados</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite">Copiado. Pégalo en la conversación.</div>
+
+<script>
+  // Copiar ejemplos al portapapeles con confirmación visual
+  (function(){
+    var toast = document.getElementById('toast'), t;
+    function show(msg){
+      toast.textContent = msg; toast.classList.add('on');
+      clearTimeout(t); t = setTimeout(function(){ toast.classList.remove('on'); }, 2200);
+    }
+    function fallbackCopy(text){
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); }catch(e){}
+      document.body.removeChild(ta);
+    }
+    document.querySelectorAll('.ask').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var text = btn.getAttribute('data-say');
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(text).catch(function(){ fallbackCopy(text); });
+        } else { fallbackCopy(text); }
+        btn.classList.add('done');
+        show('Copiado. Pégalo en la conversación.');
+        setTimeout(function(){ btn.classList.remove('done'); }, 1500);
+      });
+    });
+  })();
+</script>
+</body>
+</html>
